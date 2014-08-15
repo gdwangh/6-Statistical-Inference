@@ -1,66 +1,46 @@
 ---
 output: html_document
 ---
-the project for the statistical inference class
+the project Part 1
 ========================================================
 
-This is the project for the statistical inference class. In it, you will use simulation to explore inference and do some simple inferential data analysis. 
-
-# Part 1
 Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential(0.2)s. 
 
-### Q1.Show where the distribution is centered at and compare it to the theoretical center of the distribution.
-
-where the distribution is center:
+#### Q1.Show where the distribution is centered at and compare it to the theoretical center of the distribution.
 ```{r}
 nosim <- 1000
 n<-40
 lambda<-0.2
 mean(apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))
-```
-theoretical center of the distribution
-```{r}
 1/lambda
 ```
 
-They are almost same.
-
-### Q2. Show how variable it is and compare it to the theoretical variance of the distribution.
-
+#### Q2. Show how variable it is and compare it to the theoretical variance of the distribution.
 ```{r}
 nosim <- 1000
 n<-40
 lambda<-0.2
 sd(apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))^2
-```
-the theoretical variance of the distribution
-```{r}
 (1/lambda)^2/n
 ```
-They are almost same.
-
-### Q3. Show that the distribution is approximately normal.
-```{r,fig.height=3}
+#### Q3. Show that the distribution is approximately normal.
+```{r}
 library(data.table)
 nosim <- 1000
 n<-40
 lambda<-0.2
 df<-data.table(average=apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))
-
+```
+```{r,echo=FALSE,fig.height=3}
 library(ggplot2)
-
-g <- ggplot(df, aes(x = average))
+g <- ggplot(df, aes(x = average)) + labs(title = paste('miu = ', 1/lambda))
 g <- g + geom_histogram(fill = "salmon",binwidth=0.1, aes(y = ..density..), colour = "black")
-g <- g + geom_density(size = 2)
-g <- g + geom_vline(xintercept = 1/lambda, size = 2)
-miu<-1/lambda
-g <- g + labs(title = paste('miu = ', miu))
+g <- g + geom_density(size = 1) + geom_vline(xintercept = 1/lambda, size =1)
 g
 ```
 
-### Q4:Evaluate the coverage of the confidence interval for 1/lambda
-
-```{r,fig.height=3}
+#### Q4:Evaluate the coverage of the confidence interval for 1/lambda
+```{r}
 lambdavals <- seq(0.05, 2.0, by = 0.05)
 nosim <- 1000
 n<-400
@@ -72,10 +52,11 @@ coverage <- sapply(lambdavals, function(lambda) {
   ul <- miu + 1.96*S/sqrt(n)
   mean(ll < 1/lambda & ul > 1/lambda)
 })
-
+```
+```{r,echo=FALSE,fig.height=2}
 library(ggplot2)
 g <- ggplot(data.frame(lambdavals,coverage), aes(x = lambdavals, y=coverage))
-g <- g + geom_line(size=2)
+g <- g + geom_line(size=1)
 g <- g + geom_hline(yintercept = 0.95)
 g <- g + coord_cartesian(ylim = c(0.85,1))
 g
