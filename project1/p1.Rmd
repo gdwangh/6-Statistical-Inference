@@ -7,12 +7,7 @@ the project for the statistical inference class
 This is the project for the statistical inference class. In it, you will use simulation to explore inference and do some simple inferential data analysis. 
 
 # Part 1
-Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential(0.2)s.  You should:
-
-1. Show where the distribution is centered at and compare it to the theoretical center of the distribution.
-2. Show how variable it is and compare it to the theoretical variance of the distribution.
-3. Show that the distribution is approximately normal.
-4. Evaluate the coverage of the confidence interval for 1/lambda: X¯±1.96Sn.
+Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential(0.2)s. 
 
 ### Q1.Show where the distribution is centered at and compare it to the theoretical center of the distribution.
 
@@ -45,7 +40,8 @@ the theoretical variance of the distribution
 They are almost same.
 
 ### Q3. Show that the distribution is approximately normal.
-```{r}
+```{r,fig.height=3}
+library(data.table)
 nosim <- 1000
 n<-40
 lambda<-0.2
@@ -62,16 +58,25 @@ g <- g + labs(title = paste('miu = ', miu))
 g
 ```
 
-### Q4:Evaluate the coverage of the confidence interval for 1/lambda: X¯±1.96Sn.
-the confidence interval for 1/lambda
+### Q4:Evaluate the coverage of the confidence interval for 1/lambda
 
-```{r}
-lambdavals <- seq(0.1, 0.9, by = 0.05)
+```{r,fig.height=3}
+lambdavals <- seq(0.05, 2.0, by = 0.05)
 nosim <- 1000
+n<-400
 coverage <- sapply(lambdavals, function(lambda) {
-  xhats<-1/rexp(nosim, lambda)
-  ll <- xhats - 1.96 * xhats/sqrt(nosim)
-  ul <- xhats + 1.96 * xhats/sqrt(nosim)
-  mean(ll < lambda & ul > lambda)
+  xhats<-matrix(rexp(nosim*n, lambda), ncol=n)
+  miu<-apply(xhats, 1, mean)
+  S<-apply(xhats, 1, sd)
+  ll <- miu - 1.96*S/sqrt(n)
+  ul <- miu + 1.96*S/sqrt(n)
+  mean(ll < 1/lambda & ul > 1/lambda)
 })
+
+library(ggplot2)
+g <- ggplot(data.frame(lambdavals,coverage), aes(x = lambdavals, y=coverage))
+g <- g + geom_line(size=2)
+g <- g + geom_hline(yintercept = 0.95)
+g <- g + coord_cartesian(ylim = c(0.85,1))
+g
 ```
