@@ -12,11 +12,23 @@ Load the ToothGrowth data and perform some basic exploratory data analyses
 library(datasets)
 data(ToothGrowth)
 # give information on the data set : help(ToothGrowth)
+```
+a basic summary of the data:
+```{r}
 summary(ToothGrowth)
-head(ToothGrowth)
-
+par(mfrow = c(1, 2))
+boxplot(len~supp, data=ToothGrowth, main="boxplot(len~supp)")
+boxplot(len~dose, data=ToothGrowth,main="boxplot(len~dose)")
 ```
 
+compare tooth growth by supp
+```{r}
+g_VC<-ToothGrowth[ToothGrowth$supp=="VC","len"]
+g_OJ<-ToothGrowth[ToothGrowth$supp=="OJ","len"]
+t.test(g_OJ-g_VC)
+```
 
-#### Use confidence intervals and hypothesis tests to compare tooth growth by supp and dose. (Use the techniques from class even if there's other approaches worth considering)
-#### State your conclusions and the assumptions needed for your conclusions. 
+compare tooth growth by dose
+```{r}
+t.test(ToothGrowth$len-ToothGrowth$dose)
+```
