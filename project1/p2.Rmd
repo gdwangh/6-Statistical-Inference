@@ -1,0 +1,22 @@
+---
+title: "the project 1 part 2"
+author: "wangh"
+date: "Saturday, August 16, 2014"
+output: html_document
+---
+
+analyze the ToothGrowth data in the R datasets package
+
+Load the ToothGrowth data and perform some basic exploratory data analyses
+```{r}
+library(datasets)
+data(ToothGrowth)
+# give information on the data set : help(ToothGrowth)
+summary(ToothGrowth)
+head(ToothGrowth)
+
+```
+
+
+#### Use confidence intervals and hypothesis tests to compare tooth growth by supp and dose. (Use the techniques from class even if there's other approaches worth considering)
+#### State your conclusions and the assumptions needed for your conclusions. 
