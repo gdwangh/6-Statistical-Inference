@@ -1,8 +1,9 @@
 ---
+title: "the project 1 part 1"
+author: "wangh"
+date: "Saturday, August 16, 2014"
 output: html_document
 ---
-the project Part 1
-========================================================
 
 Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential(0.2)s. 
 
@@ -14,6 +15,7 @@ lambda<-0.2
 mean(apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))
 1/lambda
 ```
+They are nearly.
 
 #### Q2. Show how variable it is and compare it to the theoretical variance of the distribution.
 ```{r}
@@ -23,6 +25,8 @@ lambda<-0.2
 sd(apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))^2
 (1/lambda)^2/n
 ```
+They are nearly.
+
 #### Q3. Show that the distribution is approximately normal.
 ```{r}
 library(data.table)
@@ -43,20 +47,25 @@ g
 ```{r}
 lambdavals <- seq(0.05, 2.0, by = 0.05)
 nosim <- 1000
-n<-400
-coverage <- sapply(lambdavals, function(lambda) {
+myLambcov<-function(lambda) {
   xhats<-matrix(rexp(nosim*n, lambda), ncol=n)
   miu<-apply(xhats, 1, mean)
   S<-apply(xhats, 1, sd)
   ll <- miu - 1.96*S/sqrt(n)
   ul <- miu + 1.96*S/sqrt(n)
   mean(ll < 1/lambda & ul > 1/lambda)
-})
+}  
+n<-40; coverage40 <- sapply(lambdavals, myLambcov )
+n<-400; coverage400 <- sapply(lambdavals, myLambcov)
 ```
-```{r,echo=FALSE,fig.height=2}
+```{r,echo=FALSE,fig.height=3}
+dat<-rbind(data.frame(sno=40,lambdavals,coverage=coverage40),data.frame(sno=400,lambdavals,coverage=coverage400))
+
 library(ggplot2)
-g <- ggplot(data.frame(lambdavals,coverage), aes(x = lambdavals, y=coverage))
-g <- g + geom_line(size=1)
+g <- ggplot() 
+g <- g + geom_line(data=data.frame(lambdavals,coverage40), aes(x=lambdavals,y=coverage40,color="40"),size=1)
+g <- g + geom_line(data=data.frame(lambdavals,coverage400), aes(x=lambdavals,y=coverage400,color="400"),size=1)
+g <- g + scale_colour_manual("# of samples",values = c("40" = "red","400" = "blue"))
 g <- g + geom_hline(yintercept = 0.95)
 g <- g + coord_cartesian(ylim = c(0.85,1))
 g

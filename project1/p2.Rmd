@@ -7,28 +7,43 @@ output: html_document
 
 analyze the ToothGrowth data in the R datasets package
 
-Load the ToothGrowth data and perform some basic exploratory data analyses
-```{r}
+#### Load the ToothGrowth data
+```{r,fig.height=4}
 library(datasets)
 data(ToothGrowth)
-# give information on the data set : help(ToothGrowth)
-```
-a basic summary of the data:
-```{r}
-summary(ToothGrowth)
 par(mfrow = c(1, 2))
 boxplot(len~supp, data=ToothGrowth, main="boxplot(len~supp)")
 boxplot(len~dose, data=ToothGrowth,main="boxplot(len~dose)")
+coplot(len ~ dose | supp, data = ToothGrowth, panel = panel.smooth,
+       xlab = "ToothGrowth data: length vs dose, given type of supplement")
 ```
 
-compare tooth growth by supp
+#### compare tooth growth by supp
 ```{r}
 g_VC<-ToothGrowth[ToothGrowth$supp=="VC","len"]
 g_OJ<-ToothGrowth[ToothGrowth$supp=="OJ","len"]
-t.test(g_OJ-g_VC)
+diff=g_OJ - g_VC
+mean(diff)
 ```
-
-compare tooth growth by dose
+test the hypothesis: H0:diff=3 versus Ha:diff<>3
 ```{r}
-t.test(ToothGrowth$len-ToothGrowth$dose)
+tt<-t.test(diff,mu=3); tt
+qt(0.975,29)
 ```
+the TS(t=`r tt$statistic`) < qt(0.975,`r tt$parameter`)(=`r qt(0.975,tt$parameter)`), p-value(=`r tt$p.value`)>0.05, so we fail to reject the null hypothesis.
+
+###### So, by 95%, tooth growth by OJ is larger than VC about 3 unit.
+
+#### compare tooth growth by dose
+```{r}
+diff2=ToothGrowth$len/ToothGrowth$dose
+mean(diff2)
+```
+test the hypothesis: H0:diff=17 versus Ha:diff<>17
+```{r}
+tt2<-t.test(diff2,mu=17); tt2
+qt(0.975,59)
+```
+the TS(t=`r tt2$statistic`) < qt(0.975,`r tt2$parameter`)(=`r qt(0.975,tt2$parameter)`), p-value(=`r tt2$p.value`)>0.05, so we fail to reject the null hypothesis. 
+
+###### So, by 95%, tooth growth for one unit dose is a constance 17.
