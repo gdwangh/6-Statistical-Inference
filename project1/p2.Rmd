@@ -10,50 +10,56 @@ analyze the ToothGrowth data in the R datasets package
 ```{r,fig.height=3}
 library(datasets)
 data(ToothGrowth)
-par(mfrow = c(1, 2))
-boxplot(len~supp, data=ToothGrowth, main="boxplot(len~supp)")
-boxplot(len~dose, data=ToothGrowth,main="boxplot(len~dose)")
+ToothGrowth$dose=as.factor(ToothGrowth$dose)
 ```
-```{r}
-coplot(len~dose|supp,data=ToothGrowth, panel=panel.smooth,xlab="ToothGrowth data: length vs dose, given type of supplement")
+```{r,echo=FALSE}
+boxplot(len ~ dose, data = ToothGrowth,
+        boxwex = 0.25, at = 1:3 - 0.2,
+        subset = supp == "VC", col = "yellow",
+        main = "Tooth Growth",
+        xlab = "dose(mg)",
+        ylab = "tooth length",
+        xlim = c(0.5, 3.5), ylim = c(0, 35), yaxs = "i")
+boxplot(len ~ dose, data = ToothGrowth, add = TRUE,
+        boxwex = 0.25, at = 1:3 + 0.2,
+        subset = supp == "OJ", col = "orange")
+legend("bottomright", c("VC", "OJ"), fill = c("yellow", "orange"))
+
+ag<-rbind(aggregate(len~.,data=ToothGrowth, mean),data.frame(supp="-", aggregate(len~dose,data=ToothGrowth, mean)))
+xtabs(len~., data=ag)
 ```
 
-#### compare tooth growth by supp
+### Tooth Growth vs supp when dose in (0.5,1)
 ```{r}
-diff=ToothGrowth[ToothGrowth$supp=="OJ","len"] - ToothGrowth[ToothGrowth$supp=="VC","len"]
-mean(diff)
+g_OJ<- ToothGrowth[ToothGrowth$supp=="OJ" & ToothGrowth$dose %in% c(0.5,1),"len"] 
+g_VC<- ToothGrowth[ToothGrowth$supp=="VC" & ToothGrowth$dose %in% c(0.5,1),"len"]
 ```
 confidence interval and test the hypothesis: 
 ```{r}
 alpha<-0.05; 
-tt<-t.test(diff,conf.level=1-alpha); tt
+tt<-t.test(g_OJ,g_VC); tt
 ```
-Because t>0, confidence interval limits >0, H0:diff=0 versus Ha: diff>0
+For t>0, confidence interval limits >0, H0:miu_OJ = miu_VC VS. Ha: miu_OJ > miu_VC
 ```{r}
-qt(1-alpha,29)
+qt(1-alpha, 36.55)
+qt(1-alpha/2, 36.55)
 ```
-So, we reject H0 because:
+TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`), so H0 is rejected. 
 
-- 95% confidence interval not contains 0
-- TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`)
-- p-value( = `r tt$p.value`) < alpha ( = `r alpha`)
+##### conclusion: by 95% confidence interval, tooth growth by OJ is larger than by VC when dose is 0.5 or 1.
 
-##### conclusion: by 95% confidence interval, tooth growth by OJ is larger than by VC.
-
-#### compare tooth growth by dose
+### Tooth Growth vs supp when dose=2
 ```{r}
-diff2=ToothGrowth$len/ToothGrowth$dose
-mean(diff2)
+g_OJ<- ToothGrowth[ToothGrowth$supp=="OJ" & ToothGrowth$dose==2,"len"] 
+g_VC<- ToothGrowth[ToothGrowth$supp=="VC" & ToothGrowth$dose==2,"len"]
+tt<-t.test(g_OJ,g_VC); tt
 ```
-test the hypothes is: H0:diff=17 versus Ha:diff<>17
+t<0, test the hypothes is: H0:miu_OJ = miu_VC versus Ha: miu_OJ < miu_VC
 ```{r}
-tt2<-t.test(diff2,mu=17); tt2
-qt(1-alpha/2,59)
+qt(1-alpha,14.04)
+qt(1-alpha/2,14.04)
 ```
-So, we fail to reject H0 because:
 
-- 95% confidence interval contains 17
-- TS(t = `r tt2$statistic`) < qt(1-alpha/2,`r tt2$parameter`)( = `r qt(1-alpha/2,tt2$parameter)`)
-- p-value( = `r tt2$p.value`) > alpha ( = `r alpha`)
+TS(t = `r tt$statistic`) < qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha/2,tt$parameter)`), so, H0 is rejected.
 
-##### conclusion: by 95%, tooth growth for one unit dose is about 17.
+##### conclusion: 95% confidence interval, tooth growth by OJ is smaller than by VC when dose is 2.
