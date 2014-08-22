@@ -25,25 +25,38 @@ g_OJ<-ToothGrowth[ToothGrowth$supp=="OJ","len"]
 diff=g_OJ - g_VC
 mean(diff)
 ```
-test the hypothesis: H0:diff=3 versus Ha:diff<>3
+confidence interval and test the hypothesis: 
 ```{r}
-tt<-t.test(diff,mu=3); tt
-qt(0.975,29)
+alpha<-0.05
+tt<-t.test(diff,conf.level=1-alpha); tt
 ```
-the TS(t=`r tt$statistic`) < qt(0.975,`r tt$parameter`)(=`r qt(0.975,tt$parameter)`), p-value(=`r tt$p.value`)>0.05, so we fail to reject the null hypothesis.
+Because t>0, confidence interval limits >0, H0:diff=0 versus Ha: diff>0
+```{r}
+qt(1-alpha,29)
+```
+So, we reject H0 because:
 
-###### So, by 95%, tooth growth by OJ is larger than VC about 3 unit.
+- 95% confidence interval not contains 0
+- TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`)
+- p-value( = `r tt$p.value`) < alpha ( = `r alpha`)
+
+##### conclusion: by 95% confidence interval, tooth growth by OJ is larger than by VC.
 
 #### compare tooth growth by dose
 ```{r}
 diff2=ToothGrowth$len/ToothGrowth$dose
 mean(diff2)
 ```
-test the hypothesis: H0:diff=17 versus Ha:diff<>17
+test the hypothes is: H0:diff=17 versus Ha:diff<>17
 ```{r}
-tt2<-t.test(diff2,mu=17); tt2
-qt(0.975,59)
+alpha<-0.05; miu0=17
+tt2<-t.test(diff2,mu=miu0); tt2
+qt(1-alpha/2,59)
 ```
-the TS(t=`r tt2$statistic`) < qt(0.975,`r tt2$parameter`)(=`r qt(0.975,tt2$parameter)`), p-value(=`r tt2$p.value`)>0.05, so we fail to reject the null hypothesis. 
+So, we fail to reject H0 because:
 
-###### So, by 95%, tooth growth for one unit dose is a constance 17.
+- 95% confidence interval not contains `r miu0`
+- TS(t = `r tt2$statistic`) < qt(1-alpha/2,`r tt2$parameter`)( = `r qt(1-alpha/2,tt2$parameter)`)
+- p-value( = `r tt2$p.value`) > alpha ( = `r alpha`)
+
+##### So, by 95%, tooth growth for one unit dose is about 17.
