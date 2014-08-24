@@ -43,7 +43,9 @@ t>0, T-confidence interval is above 0, so test the hypothes: H0:miu_OJ = miu_VC 
 qt(1-alpha, 36.55)
 qt(1-alpha/2, 36.55)
 ```
-Because TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`), H0 is rejected.
+H0 is rejected, because TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`), 
+
+So: by 95% confidence interval, tooth growth by OJ is larger than by VC when dose is 0.5 or 1.
 
 ### Tooth Growth vs supp when dose=2
 ```{r}
@@ -62,5 +64,7 @@ we fail to reject H0 because:
 2. |TS(t = `r tt$statistic`)| >= qt(1-alpha/2,`r tt$parameter`)( = `r qt(1-alpha/2,tt$parameter)`): `r abs(tt$statistic)>= qt(1-alpha/2,tt$parameter)`
 3. TS(t = `r tt$statistic`) >= qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`): `r tt$statistic >= qt(1-alpha,tt$parameter)`
 
+So,  when dose is 2, tooth growth by OJ and by VC is same.
+
 ### Conclusion
-By 95% confidence interval, tooth growth by OJ is larger than by VC when dose is 0.5 or 1, but when dose is 2, tooth growth by OJ and by VC is same.
+When the dose is large enough(2mg), the OJ and the VC are same with each other for tooth growth, while the OJ is better for tooth growth than VC when the dose is not large enough. 
