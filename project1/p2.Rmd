@@ -11,7 +11,7 @@ analyze the ToothGrowth data in the R datasets package
 library(datasets)
 data(ToothGrowth)
 ToothGrowth$dose=as.factor(ToothGrowth$dose)
-ag<-rbind(aggregate(len~.,data=ToothGrowth, mean),data.frame(supp="-", aggregate(len~dose,data=ToothGrowth, mean)))
+ag<-rbind(aggregate(len~.,data=ToothGrowth, mean),data.frame(supp="VC+OJ", aggregate(len~dose,data=ToothGrowth, mean)))
 xtabs(len~., data=ag)
 ```
 ```{r,echo=FALSE}
@@ -38,12 +38,12 @@ confidence interval and test the hypothesis:
 alpha<-0.05; 
 tt<-t.test(g_OJ,g_VC); tt
 ```
-For t>0, confidence interval limits >0, H0:miu_OJ = miu_VC VS. Ha: miu_OJ > miu_VC
+t>0, T-confidence interval is above 0, so test the hypothes: H0:miu_OJ = miu_VC VS. Ha: miu_OJ > miu_VC
 ```{r}
 qt(1-alpha, 36.55)
 qt(1-alpha/2, 36.55)
 ```
-H0 is rejected, because TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`). 
+Because TS(t = `r tt$statistic`) > qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`), H0 is rejected.
 
 ### Tooth Growth vs supp when dose=2
 ```{r}
@@ -51,13 +51,16 @@ g_OJ<- ToothGrowth[ToothGrowth$supp=="OJ" & ToothGrowth$dose==2,"len"]
 g_VC<- ToothGrowth[ToothGrowth$supp=="VC" & ToothGrowth$dose==2,"len"]
 tt<-t.test(g_OJ,g_VC); tt
 ```
-t<0, test the hypothes is: H0:miu_OJ = miu_VC versus Ha: miu_OJ < miu_VC
+t<0, T-confidence interval cover 0, so test the hypothes: H0:miu_OJ = miu_VC VS. Ha1: miu_OJ <> miu_VC 
 ```{r}
 qt(1-alpha,14.04)
 qt(1-alpha/2,14.04)
 ```
+we fail to reject H0 because:
 
-H0 is rejected, because TS(t = `r tt$statistic`) < qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha/2,tt$parameter)`). 
+1. TS(t = `r tt$statistic`) <= qt(alpha,`r tt$parameter`)( = `r qt(alpha,tt$parameter)`): `r tt$statistic <=qt(alpha,tt$parameter)`
+2. |TS(t = `r tt$statistic`)| >= qt(1-alpha/2,`r tt$parameter`)( = `r qt(1-alpha/2,tt$parameter)`): `r abs(tt$statistic)>= qt(1-alpha/2,tt$parameter)`
+3. TS(t = `r tt$statistic`) >= qt(1-alpha,`r tt$parameter`)( = `r qt(1-alpha,tt$parameter)`): `r tt$statistic >= qt(1-alpha,tt$parameter)`
 
 ### Conclusion
-By 95% confidence interval, tooth growth by OJ is larger than by VC when dose is 0.5 or 1, but when dose is 2, tooth growth by OJ is smaller than by VC .
+By 95% confidence interval, tooth growth by OJ is larger than by VC when dose is 0.5 or 1, but when dose is 2, tooth growth by OJ and by VC is same.
