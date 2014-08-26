@@ -12,6 +12,7 @@ library(datasets); library(ggplot2); data(ToothGrowth)
 ToothGrowth$dose=as.factor(ToothGrowth$dose)
 summary(ToothGrowth)
 ag<-aggregate(len~.,data=ToothGrowth, mean); xtabs(len~., data=ag)
+with(ToothGrowth,tapply(len,list(supp,dose), var))
 ```
 ```{r,echo=FALSE,fig.height=3.5}
 boxplot(len ~ dose, data = ToothGrowth,boxwex = 0.25, at = 1:3 - 0.2,main = "Tooth Growth",
@@ -23,12 +24,12 @@ legend("bottomright", c("VC", "OJ"), fill = c("yellow", "green"))
 ```
 ```{r,echo=FALSE,fig.height=3}
 qplot(len, data=ToothGrowth,facets=.~supp, color=dose,geom="density")
+qplot(len, data=ToothGrowth,facets=.~dose, color=supp,geom="density")
 ```
 
 From upper exploratory data analyses, We hypothesis that: 
 
-1. The more dose is, the more length tooth grows
-2. The len fits approximately normal distribution and for n is only 60, fit T distribution
+- The len fits approximately normal distribution and for n is only 60, fit T distribution
 
 ### Tooth Growth vs supp when dose in (0.5,1)
 ```{r}
@@ -72,6 +73,5 @@ Assumption: The Tooth growth fits approximately normal distribution.
 
 Conclusion:
 
-1. The more dose is, the more length tooth grows
-2. when the dose is not large enough(<2mg), the OJ is better for tooth growth than VC .
-3. When the dose is large enough(2mg), the OJ and the VC are same with each other for tooth growth. 
+- when the dose is not large enough(<2mg), the OJ is better for tooth growth than VC .
+- When the dose is large enough(2mg), the OJ and the VC are same with each other for tooth growth. 
