@@ -10,6 +10,7 @@ Illustrate via simulation and associated explanatory text the properties of the 
 set.seed(2)
 library(data.table)
 library(ggplot2)
+library(graphics)
 ```
 #### Q1.Show where the distribution is centered at and compare it to the theoretical center of the distribution.
 ```{r}
@@ -39,11 +40,15 @@ lambda<-0.2
 df<-data.table(average=apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))
 ```
 ```{r,echo=FALSE,fig.height=3}
+qqnorm(df$average, col="blue")
+qqline(df$average,col="red")
 g <- ggplot(df, aes(x = average)) + labs(title = paste('miu = ', 1/lambda))
 g <- g + geom_histogram(fill = "salmon",binwidth=0.1, aes(y = ..density..), colour = "black")
 g <- g + geom_density(size = 1) + geom_vline(xintercept = 1/lambda, size =1)
 g
 ```
+
+it look like normal distribution and qqplot show the data sample is near the a “theoretical” line which is normal by default 
 
 #### Q4:Evaluate the coverage of the confidence interval for 1/lambda
 
@@ -63,8 +68,8 @@ g
 # n<-400; coverage400 <- sapply(lambdavals, myLambcov)
 nosim <- 1000
 lambda<-0.2
-set.seed(4)
-nvals<-c(40,100,400,1000,4000)
+set.seed(2)
+nvals<-seq(40,1000,by=10)
 coverages<-sapply(nvals, function(n) {
   xhats<-matrix(rexp(nosim*n, lambda), ncol=n)
   miu<-apply(xhats, 1, mean)
@@ -82,8 +87,7 @@ g <- ggplot()
 # g <- g + geom_line(data=data.frame(lambdavals,coverage400), aes(x=lambdavals,y=coverage400,color="400"),size=1)
 # g <- g + scale_colour_manual("# of samples",values = c("40" = "red","400" = "blue"))
 g <- g + geom_line(data=data.frame(nvals,coverages), aes(x=nvals,y=coverages),size=1)
-g <- g + geom_hline(yintercept = 0.95)
+g <- g + geom_hline(yintercept = 0.95, color="red")
 g <- g + coord_cartesian(ylim = c(0.85,1))
 g
 ```
-*/
