@@ -44,29 +44,45 @@ g
 ```
 
 #### Q4:Evaluate the coverage of the confidence interval for 1/lambda
+
 ```{r}
-lambdavals <- seq(0.05, 2.0, by = 0.05)
+# (This only needs to be done for the specific value of lambda). 
+#lambdavals <- seq(0.05, 2.0, by = 0.05)
+# nosim <- 1000
+# myLambcov<-function(lambda) {
+#   xhats<-matrix(rexp(nosim*n, lambda), ncol=n)
+#   miu<-apply(xhats, 1, mean)
+#   S<-apply(xhats, 1, sd)
+#   ll <- miu - 1.96*S/sqrt(n)
+#   ul <- miu + 1.96*S/sqrt(n)
+#   mean(ll < 1/lambda & ul > 1/lambda)
+# }  
+# n<-40; coverage40 <- sapply(lambdavals, myLambcov )
+# n<-400; coverage400 <- sapply(lambdavals, myLambcov)
 nosim <- 1000
-myLambcov<-function(lambda) {
+lambda<-0.2
+set.seed(4)
+nvals<-c(40,100,400,1000,4000)
+coverages<-sapply(nvals, function(n) {
   xhats<-matrix(rexp(nosim*n, lambda), ncol=n)
   miu<-apply(xhats, 1, mean)
   S<-apply(xhats, 1, sd)
   ll <- miu - 1.96*S/sqrt(n)
   ul <- miu + 1.96*S/sqrt(n)
   mean(ll < 1/lambda & ul > 1/lambda)
-}  
-n<-40; coverage40 <- sapply(lambdavals, myLambcov )
-n<-400; coverage400 <- sapply(lambdavals, myLambcov)
+})
 ```
 ```{r,echo=FALSE,fig.height=3}
-dat<-rbind(data.frame(sno=40,lambdavals,coverage=coverage40),data.frame(sno=400,lambdavals,coverage=coverage400))
+#dat<-rbind(data.frame(sno=40,lambdavals,coverage=coverage40),data.frame(sno=400,lambdavals,coverage=coverage400))
 
 library(ggplot2)
 g <- ggplot() 
-g <- g + geom_line(data=data.frame(lambdavals,coverage40), aes(x=lambdavals,y=coverage40,color="40"),size=1)
-g <- g + geom_line(data=data.frame(lambdavals,coverage400), aes(x=lambdavals,y=coverage400,color="400"),size=1)
-g <- g + scale_colour_manual("# of samples",values = c("40" = "red","400" = "blue"))
+# g <- g + geom_line(data=data.frame(lambdavals,coverage40), aes(x=lambdavals,y=coverage40,color="40"),size=1)
+# g <- g + geom_line(data=data.frame(lambdavals,coverage400), aes(x=lambdavals,y=coverage400,color="400"),size=1)
+# g <- g + scale_colour_manual("# of samples",values = c("40" = "red","400" = "blue"))
+g <- g + geom_line(data=data.frame(nvals,coverages), aes(x=nvals,y=coverages),size=1)
 g <- g + geom_hline(yintercept = 0.95)
 g <- g + coord_cartesian(ylim = c(0.85,1))
 g
 ```
+*/
