@@ -6,7 +6,11 @@ output: html_document
 ---
 
 Illustrate via simulation and associated explanatory text the properties of the distribution of the mean of 40 exponential(0.2)s. 
-
+```{r}
+set.seed(2)
+library(data.table)
+library(ggplot2)
+```
 #### Q1.Show where the distribution is centered at and compare it to the theoretical center of the distribution.
 ```{r}
 nosim <- 1000
@@ -29,14 +33,12 @@ They are nearly.
 
 #### Q3. Show that the distribution is approximately normal.
 ```{r}
-library(data.table)
 nosim <- 1000
 n<-40
 lambda<-0.2
 df<-data.table(average=apply(matrix(rexp(nosim*n, lambda), ncol=n), 1, mean))
 ```
 ```{r,echo=FALSE,fig.height=3}
-library(ggplot2)
 g <- ggplot(df, aes(x = average)) + labs(title = paste('miu = ', 1/lambda))
 g <- g + geom_histogram(fill = "salmon",binwidth=0.1, aes(y = ..density..), colour = "black")
 g <- g + geom_density(size = 1) + geom_vline(xintercept = 1/lambda, size =1)
@@ -75,7 +77,6 @@ coverages<-sapply(nvals, function(n) {
 ```{r,echo=FALSE,fig.height=3}
 #dat<-rbind(data.frame(sno=40,lambdavals,coverage=coverage40),data.frame(sno=400,lambdavals,coverage=coverage400))
 
-library(ggplot2)
 g <- ggplot() 
 # g <- g + geom_line(data=data.frame(lambdavals,coverage40), aes(x=lambdavals,y=coverage40,color="40"),size=1)
 # g <- g + geom_line(data=data.frame(lambdavals,coverage400), aes(x=lambdavals,y=coverage400,color="400"),size=1)
