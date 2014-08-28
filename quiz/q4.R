@@ -28,21 +28,34 @@ placebo_mean<-1
 placebo_sd<-1.8
 placebo_n<-9
 
-
-2 year = 26 * 4weeks
-Poisson分布:
+# 2 year = 26 * 4weeks
+# Poisson分布:
   lamda<- placebo_mean - treated_mean
   t<-52*2/4
   lamda0<-lamda*t
   poisson.test(x=0, T=52*2/4, r=lamda/4, alternative="two.sided")
 
-感觉有点不太对，用bootstrap抽样仿真：
+# 感觉有点不太对，用bootstrap抽样仿真：
 B<-52*2/4
 sample_treated<-rnorm(treated_n, mean=treated_mean,sd=treated_sd)
 sample_placebo<-rnorm(placebo_n, mean=placebo_mean,sd=placebo_sd)
+resample_treated<-matrix(sample(sample_treated, treated_n * B, replace = TRUE),B,treated_n)
+resample_placebo<-matrix(sample(sample_placebo, placebo_n * B, replace = TRUE),B,placebo_n)
+re_mean_treated<-apply(resample_treated, 1, mean)
+re_mean_placebo<-apply(resample_placebo, 1, mean)
+t.test(re_mean_treated, re_mean_placebo, alternative="two.sided",var.equal=TRUE)
+
+# 上面是以4weeks为单位，是不是应该以2year为单位呢?
 resample_treated<-sample(sample_treated, treated_n * B, replace = TRUE)
 resample_placebo<-sample(sample_placebo, placebo_n * B, replace = TRUE)
-t.test(resample_treated, resample_placebo, alternative="two.sided")
+t.test(resample_treated,resample_placebo,alternative="two.sided",var.equal=TRUE)
+
+# 复杂计算：
+Sp<-sqrt(((treated_n-1)*treated_sd^2+(placebo_n-1)*placebo_sd^2)/(treated_n+placebo_n-2))
+ts<-treated_mean - placebo_mean /(Sp*sqrt(1/treated_n+1/placebo_n))
+2*pnorm(abs(ts), lower.tail = FALSE)
+
+# 以上都可以得到 pvalue<0.01, 但是具体的数值都不一样！！！
 
 Q7:
   X_bar<-0.01
@@ -72,7 +85,7 @@ Q10:
   S<-12
 
   TS<-(miu_y-miu_x)/(S*sqrt(1/n_x+1/n_y))
-  2*(1-pnorm(TS, lower.tail =FALSE))
- 
+  2*pnorm(abs(TS),lower.tail =FALSE)
+
 Q11:
   alpha/n
